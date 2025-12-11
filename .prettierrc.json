@@ -1,0 +1,16 @@
+{
+  "semi": true,
+  "trailingComma": "all",
+  "singleQuote": true,
+  "jsxSingleQuote": false,
+  "tabWidth": 2,
+  "printWidth": 100,
+  "useTabs": false,
+  "arrowParens": "avoid",
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "endOfLine": "lf",
+  "experimentalTernaries": true,
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "tailwindFunctions": ["tv"]
+}

@@ -10,7 +10,7 @@ npm install
 
 Create `.env` file:
 ```
-CURRENCY_BEACON_API_KEY=your_api_key_here
+VITE_CURRENCY_BEACON_API_KEY=your_api_key_here
 ```
 
 Get your API key at https://currencybeacon.com/
