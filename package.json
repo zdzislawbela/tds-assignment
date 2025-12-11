@@ -1,5 +1,5 @@
 {
-  "name": "tds-assigment",
+  "name": "tds-assignment",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,9 +10,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write ."
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.12",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

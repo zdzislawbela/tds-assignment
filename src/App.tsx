@@ -1,5 +1,9 @@
-function App() {
-  return <h1>TDS assignment</h1>;
-}
+import { CurrencyConverter } from './components/CurrencyConverter';
 
-export default App;
+export function App() {
+  return (
+    <div className="flex min-h-svh items-center justify-center bg-slate-950 p-4 text-gray-100">
+      <CurrencyConverter />
+    </div>
+  );
+}
