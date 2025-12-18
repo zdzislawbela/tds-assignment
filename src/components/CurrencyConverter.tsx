@@ -1,5 +1,6 @@
 import { useConvertCurrency } from '@/hooks/useConvertCurrency';
 import { useCurrencies } from '@/hooks/useCurrencies';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useState } from 'react';
 import { CurrencyInput } from './CurrencyInput';
 
@@ -9,6 +10,7 @@ export function CurrencyConverter() {
   const [amount, setAmount] = useState('1');
 
   const numAmount = parseFloat(amount) || 0;
+  const debouncedAmount = useDebouncedValue(numAmount, 300);
 
   const {
     data: currencies = [],
@@ -23,7 +25,7 @@ export function CurrencyConverter() {
   } = useConvertCurrency({
     from: fromCurrency,
     to: toCurrency,
-    amount: numAmount,
+    amount: debouncedAmount,
   });
 
   const error = currenciesError || convertError;
