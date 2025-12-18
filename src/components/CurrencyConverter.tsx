@@ -54,6 +54,12 @@ export function CurrencyConverter() {
             type="number"
             value={amount}
             onChange={e => setAmount(e.target.value)}
+            onKeyDown={e => {
+              // Avoid scientific notation / sign characters in number input (e/E/+/-)
+              if (['e', 'E', '+', '-'].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
             placeholder="Amount"
             min="0"
             data-testid="amount-input"
