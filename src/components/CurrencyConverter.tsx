@@ -33,7 +33,10 @@ export function CurrencyConverter() {
       <h1 className="mb-6 text-center text-2xl font-semibold text-white">Currency Converter</h1>
 
       {error && (
-        <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-center text-sm text-red-300">
+        <div
+          data-testid="error-message"
+          className="mb-4 rounded-lg bg-red-500/10 p-3 text-center text-sm text-red-300"
+        >
           {error.message}
         </div>
       )}
@@ -45,6 +48,7 @@ export function CurrencyConverter() {
           selectedCurrency={fromCurrency}
           onCurrencyChange={setFromCurrency}
           disabled={loadingCurrencies}
+          currencySelectTestId="from-currency-select"
         >
           <input
             type="number"
@@ -52,6 +56,7 @@ export function CurrencyConverter() {
             onChange={e => setAmount(e.target.value)}
             placeholder="Amount"
             min="0"
+            data-testid="amount-input"
             className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
           />
         </CurrencyInput>
@@ -62,8 +67,12 @@ export function CurrencyConverter() {
           selectedCurrency={toCurrency}
           onCurrencyChange={setToCurrency}
           disabled={loadingCurrencies}
+          currencySelectTestId="to-currency-select"
         >
-          <div className="flex w-full items-center rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white">
+          <div
+            data-testid="converted-value"
+            className="flex w-full items-center rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white"
+          >
             {converting ?
               <span className="text-slate-400">Converting...</span>
             : result !== undefined ?

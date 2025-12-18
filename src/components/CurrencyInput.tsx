@@ -8,6 +8,7 @@ interface Props {
   selectedCurrency: string;
   onCurrencyChange: (code: string) => void;
   disabled?: boolean;
+  currencySelectTestId?: string;
   children: ReactNode;
 }
 
@@ -17,6 +18,7 @@ export function CurrencyInput({
   selectedCurrency,
   onCurrencyChange,
   disabled,
+  currencySelectTestId,
   children,
 }: Props) {
   return (
@@ -29,6 +31,7 @@ export function CurrencyInput({
           value={selectedCurrency}
           onChange={onCurrencyChange}
           disabled={disabled}
+          testId={currencySelectTestId}
         />
       </div>
     </div>

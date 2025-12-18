@@ -30,6 +30,21 @@ npm run dev
 
 The app will be available at http://localhost:5173
 
+## E2E Tests (Playwright)
+
+Install Playwright (once):
+
+```bash
+npm i -D @playwright/test
+npx playwright install
+```
+
+Run E2E tests:
+
+```bash
+npm run test:e2e
+```
+
 ## Features
 
 - Select currencies from/to via dropdowns
