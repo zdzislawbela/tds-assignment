@@ -11,7 +11,7 @@ interface Props {
   children: ReactNode;
 }
 
-export function CurrencyInput({
+export function CurrencyField({
   label,
   currencies,
   selectedCurrency,

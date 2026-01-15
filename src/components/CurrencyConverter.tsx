@@ -1,29 +1,20 @@
 import { useConvertCurrency } from '@/hooks/useConvertCurrency';
 import { useCurrencies } from '@/hooks/useCurrencies';
-import { useEffect, useState } from 'react';
-import { CurrencyInput } from './CurrencyInput';
-
-type Record = {
-  fromAmount: string;
-  fromCurrency: string;
-  toAmount: string;
-  toCurrency: string;
-};
-
-type CandidateRecord = Omit<Partial<Record>, 'toCurrency'> | null;
-
-// const getIsEmptyString = (candidate: string) => candidate.length === 0;
+import { useRecentConversions } from '@/hooks/useRecentConversions';
+import { useEffect, useRef, useState } from 'react';
+import { CurrencyField } from './CurrencyField';
+import { NumberInput } from './NumberInput';
+import { RecentConversionsList } from './RecentConversionsList';
+import { Wrapper } from './Wrapper';
 
 export function CurrencyConverter() {
   const [fromCurrency, setFromCurrency] = useState('');
   const [toCurrency, setToCurrency] = useState('');
-  const [amount, setAmount] = useState('1');
-  const [records, setRecords] = useState<Record[]>([]);
-  const [recordCandidate, setRecordCandidate] = useState<CandidateRecord>({
-    fromAmount: '1',
-  });
-  console.log({ recordCandidate, records });
-  const numAmount = parseFloat(amount) || 0;
+  const [fromAmount, setFromAmount] = useState('1');
+
+  const { conversionHistory, add, maxItems } = useRecentConversions({ maxItems: 5 });
+
+  const fromAmountAsNumber = parseFloat(fromAmount);
 
   const {
     data: currencies = [],
@@ -32,109 +23,90 @@ export function CurrencyConverter() {
   } = useCurrencies();
 
   const {
-    data: result,
-    isFetching: converting,
+    data: result = 0,
+    isFetching: isConverting,
     error: convertError,
   } = useConvertCurrency({
     from: fromCurrency,
     to: toCurrency,
-    amount: numAmount,
+    amount: fromAmountAsNumber,
   });
 
+  const lastRecordedKeyRef = useRef<string | null>(null);
+
   useEffect(() => {
-    //
-  }, [result]);
+    if (!fromCurrency || !toCurrency || isConverting || fromAmount === '') return;
 
-  const getShouldAddToList = (cadidate: CandidateRecord) => {
-    return cadidate && Object.keys(cadidate).length === 3;
-  };
+    const key = JSON.stringify([fromCurrency, toCurrency, fromAmountAsNumber, result]);
 
-  const handleSetFromCurrency = (code: string) => {
-    setFromCurrency(code);
-    setRecordCandidate(prev => ({ ...prev, fromCurrency: code }));
-    const shouldAddToList = getShouldAddToList(recordCandidate);
-
-    if (shouldAddToList && result) {
-      setRecords(prev => [...prev, { ...(recordCandidate as Record), toAmounnt: result }]);
+    const isNewKeySameAsPrevious = lastRecordedKeyRef.current === key;
+    if (isNewKeySameAsPrevious) {
+      return;
     }
-  };
 
-  const handleSetToCurrency = (code: string) => {
-    setToCurrency(code);
-    setRecordCandidate(prev => ({ ...prev, to: code }));
-    const shouldAddToList = getShouldAddToList(recordCandidate);
+    lastRecordedKeyRef.current = key;
 
-    if (shouldAddToList && result) {
-      setRecords(prev => [...prev, { ...(recordCandidate as Record), toAmounnt: result }]);
-    }
-  };
-
-  const handleSetFromAmount = (value: string) => {
-    setAmount(value);
-    setRecordCandidate(prev => ({ ...prev, fromAmount: value }));
-    const shouldAddToList = getShouldAddToList(recordCandidate);
-
-    if (shouldAddToList && result) {
-      setRecords(prev => [...prev, { ...(recordCandidate as Record), toAmounnt: result }]);
-    }
-  };
-
-  const error = currenciesError || convertError;
+    add({
+      fromAmount: fromAmountAsNumber,
+      fromCurrency,
+      toAmount: result,
+      toCurrency,
+    });
+  }, [add, isConverting, fromCurrency, fromAmountAsNumber, result, toCurrency, fromAmount]);
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-900 p-6 shadow-lg">
+      <Wrapper>
         <h1 className="mb-6 text-center text-2xl font-semibold text-white">Currency Converter</h1>
 
-        {error && (
+        {currenciesError && (
           <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-center text-sm text-red-300">
-            {error.message}
+            {currenciesError.message}
+          </div>
+        )}
+
+        {convertError && (
+          <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-center text-sm text-red-300">
+            {convertError.message}
           </div>
         )}
 
         <div className="space-y-4">
-          <CurrencyInput
+          <CurrencyField
             label="From"
             currencies={currencies}
             selectedCurrency={fromCurrency}
-            onCurrencyChange={handleSetFromCurrency}
+            onCurrencyChange={setFromCurrency}
             disabled={loadingCurrencies}
           >
-            <input
-              type="number"
-              value={amount}
-              onChange={e => handleSetFromAmount(e.target.value)}
+            <NumberInput
+              value={fromAmount}
+              onChange={e => setFromAmount(e.target.value)}
               placeholder="Amount"
-              min="0"
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
             />
-          </CurrencyInput>
+          </CurrencyField>
 
-          <CurrencyInput
+          <CurrencyField
             label="To"
             currencies={currencies}
             selectedCurrency={toCurrency}
-            onCurrencyChange={handleSetToCurrency}
+            onCurrencyChange={setToCurrency}
             disabled={loadingCurrencies}
           >
             <div className="flex w-full items-center rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white">
-              {converting ?
+              {isConverting ?
                 <span className="text-slate-400">Converting...</span>
-              : result !== undefined ?
-                result.toLocaleString(undefined, {
+              : result.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 4,
                 })
-              : <span className="text-slate-500">0.00</span>}
+              }
             </div>
-          </CurrencyInput>
+          </CurrencyField>
         </div>
-      </div>
-      <ol className="h-full min-h-2">
-        {records.map(item => {
-          return <li>{item.fromAmount}</li>;
-        })}
-      </ol>
+      </Wrapper>
+
+      <RecentConversionsList conversions={conversionHistory} maxItems={maxItems} />
     </div>
   );
 }
