@@ -102,12 +102,12 @@ export function useRecentConversions(options: UseRecentConversionsOptions = {}) 
     [maxItems, storageKey],
   );
 
-  const clear = useCallback(() => {
+  const clearAll = useCallback(() => {
     setConversionHistory(() => {
       persist(storageKey, []);
       return [];
     });
   }, [storageKey]);
 
-  return { conversionHistory, add, clear, maxItems };
+  return { conversionHistory, add, clearAll };
 }
