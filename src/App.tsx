@@ -1,8 +1,10 @@
 import { CurrencyConverter } from './components/CurrencyConverter';
 import { ErrorBar } from './components/ErrorBar';
+import { Favourites } from './components/Favourites';
 import { RecentConversions } from './components/RecentConversions';
 import { ConversionsContextProvider } from './contexts/ConversionsContext';
 import { CurrencyContextProvider } from './contexts/CurrencyContext';
+import { FavouritesContextProvider } from './contexts/FavouritesContext';
 
 export function App() {
   return (
@@ -10,8 +12,11 @@ export function App() {
       <CurrencyContextProvider>
         <ErrorBar />
         <ConversionsContextProvider>
-          <CurrencyConverter />
-          <RecentConversions />
+          <FavouritesContextProvider>
+            <CurrencyConverter />
+            <RecentConversions />
+            <Favourites />
+          </FavouritesContextProvider>
         </ConversionsContextProvider>
       </CurrencyContextProvider>
     </div>

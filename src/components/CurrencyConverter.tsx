@@ -1,5 +1,6 @@
 import { useConversionsContext } from '@/contexts/ConversionsContext';
 import { useCurrencyContext } from '@/contexts/CurrencyContext';
+import { useFavouritesContext } from '@/contexts/FavouritesContext';
 import { useConvertCurrency } from '@/hooks/useConvertCurrency';
 import React, { useEffect, useRef, useState } from 'react';
 import { Card } from './Card';
@@ -14,6 +15,7 @@ export function CurrencyConverter() {
   const { currencies, loadingCurrencies } = useCurrencyContext();
 
   const { add } = useConversionsContext();
+  const { toggle, isFavourite } = useFavouritesContext();
 
   const fromAmountAsNumber = parseFloat(fromAmount);
 
@@ -48,6 +50,9 @@ export function CurrencyConverter() {
       toCurrency,
     });
   }, [add, isConverting, fromCurrency, fromAmountAsNumber, result, toCurrency, fromAmount]);
+
+  const canFavourite = Boolean(fromCurrency && toCurrency);
+  const fav = canFavourite ? isFavourite(fromCurrency, toCurrency) : false;
 
   return (
     <Card
@@ -93,6 +98,16 @@ export function CurrencyConverter() {
             }
           </div>
         </CurrencyField>
+
+        <button
+          className="w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+          onClick={() => toggle(fromCurrency, toCurrency)}
+          disabled={!canFavourite}
+          type="button"
+          title={fav ? 'Remove from favourites' : 'Add to favourites'}
+        >
+          {fav ? '★ Favourited' : '☆ Add to favourites'}
+        </button>
       </div>
     </Card>
   );
